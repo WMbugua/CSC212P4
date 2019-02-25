@@ -16,15 +16,19 @@ public class Exit {
 	 * How do we identify the Place that this is going.
 	 */
 	private String target;
-	
+	/**
+	 * Create a secret exit
+	 */
+	public boolean isSecret;
 	/**
 	 * Create a new Exit.
 	 * @param target - where it goes.
 	 * @param description - how it looks.
 	 */
-	public Exit(String target, String description) {
+	public Exit(String target, String description, boolean SecretExit) {
 		this.description = description;
 		this.target = target;
+		this.isSecret = SecretExit;
 	}
 	
 	/**
@@ -55,6 +59,22 @@ public class Exit {
 	 */
 	public int hashCode() {
 		return Objects.hash(this.description, this.target);
+	}
+	
+	/**
+	 * Is the exit secret?
+	 * @return true if the exit is secret, false if it isn't
+	 * all exits are not secret
+	 */
+	public boolean isSecret() {
+		return this.isSecret;
+	}
+	
+	/**
+	 * Reveal secret exits when called upon
+	 */
+	
+	public void search() {
 	}
 	
 	/**

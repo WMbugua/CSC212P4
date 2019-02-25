@@ -15,6 +15,14 @@ public class Place {
 	 */
 	private List<Exit> exits;
 	/**
+	 * This is a list of the secret exits in this place
+	 */
+	private List<SecretExit> secretExits;
+	/**
+	 * A list of the items in this place
+	 */
+	private List<String> items;
+	/**
 	 * This is the identifier of the place.
 	 */
 	private String id;
@@ -26,6 +34,10 @@ public class Place {
 	 * Whether reaching this place ends the game.
 	 */
 	private boolean terminal;
+	/**
+	 * The current time in the place
+	 */
+	private GameTime gameTime;
 	
 	/**
 	 * Internal only constructor for Place. Use {@link #create(String, String)} or {@link #terminal(String, String)} instead.
@@ -38,6 +50,9 @@ public class Place {
 		this.description = description;
 		this.exits = new ArrayList<>();
 		this.terminal = terminal;
+		this.secretExits = new ArrayList<>();
+		this.items = new ArrayList<>();
+		this.gameTime = new GameTime(0);
 	}
 	
 	/**
@@ -46,6 +61,16 @@ public class Place {
 	 */
 	public void addExit(Exit exit) {
 		this.exits.add(exit);
+		if (exit.isSecret()) {
+			secretExits.add((SecretExit) exit);
+		}
+	}
+	/**
+	 * Create items in place
+	 * @param item - name of item in the place
+	 */
+	public void addItem(String item) {
+		this.items.add(item);
 	}
 	
 	/**
@@ -71,13 +96,49 @@ public class Place {
 	public String getDescription() {
 		return this.description;
 	}
-
 	/**
-	 * Get a view of the exits from this Place, for navigation.
-	 * @return all the exits from this place.
+	 * Add the items and GameTime in the place to the description
+	 */
+	public void printDescription() {
+		System.out.println(this.description + "The room has "+ this.items + " The time is "+ this.gameTime.getHour());
+	}
+	/**
+	 * Get a view of all the exits from this place
+	 * @return a list of all the exits in this place
+	 */
+     public List<Exit> getAllExits(){
+    	 return Collections.unmodifiableList(exits);
+     }
+	/**
+	 * Get a view of the visible exits from this Place, for navigation.
+	 * @return all the visible exits from this place.
 	 */
 	public List<Exit> getVisibleExits() {
-		return Collections.unmodifiableList(exits);
+		  List<Exit> output = new ArrayList<>();
+		  for (Exit e : this.exits) {
+		    if (e.isSecret()) {
+		      // don't show to player	
+		    } else {
+		      output.add(e);
+		    }
+		  }
+		  return output;
+		}
+	/**
+	 * Checks if the exit is a secret exit
+	 */
+	public void search() {
+		  for (Exit e : this.exits) {
+		    // search makes it not secret any more if it's a SecretExit!
+		    e.search();
+		  }
+		}
+	/**
+	 * Get a view of the secret exits in this place
+	 * @return all the secret exits from this place
+	 */
+	public List<SecretExit> getSecretExits(){
+		return Collections.unmodifiableList(secretExits);
 	}
 	
 	/**
@@ -99,7 +160,14 @@ public class Place {
 	public static Place create(String id, String description) {
 		return new Place(id, description, false);
 	}
-	
+	/**
+	 * Shows list of items in a location
+	 * @return all the items in this place
+	 */
+	public List<String> getItems(){
+		return this.items;
+		
+	}
 	/**
 	 * Implements what we need to put Place in a HashSet or HashMap.
 	 */
